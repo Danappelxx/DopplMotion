@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		371280EB1BAD54ED005D7FE3 /* 20kHz.wav in Resources */ = {isa = PBXBuildFile; fileRef = 371280EA1BAD54ED005D7FE3 /* 20kHz.wav */; };
 		3789822A1BAD5ABE0094242D /* Pretender.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 378982291BAD5ABE0094242D /* Pretender.mp3 */; };
+		379EF6DB1BAE0F520029B9BB /* GraphSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379EF6DA1BAE0F520029B9BB /* GraphSquare.swift */; };
+		379EF6DD1BAE0F8D0029B9BB /* EZAudioFFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 379EF6DC1BAE0F8D0029B9BB /* EZAudioFFT.swift */; };
 		37FA07511BAD235500D682DB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FA07501BAD235500D682DB /* AppDelegate.swift */; };
 		37FA07531BAD235500D682DB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37FA07521BAD235500D682DB /* ViewController.swift */; };
 		37FA07551BAD235500D682DB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 37FA07541BAD235500D682DB /* Assets.xcassets */; };
@@ -20,6 +22,8 @@
 		10FA5C3C03CFD52A29AC547F /* Pods-DopplMotion.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DopplMotion.release.xcconfig"; path = "Pods/Target Support Files/Pods-DopplMotion/Pods-DopplMotion.release.xcconfig"; sourceTree = "<group>"; };
 		371280EA1BAD54ED005D7FE3 /* 20kHz.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = 20kHz.wav; sourceTree = "<group>"; };
 		378982291BAD5ABE0094242D /* Pretender.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Pretender.mp3; sourceTree = "<group>"; };
+		379EF6DA1BAE0F520029B9BB /* GraphSquare.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GraphSquare.swift; sourceTree = "<group>"; };
+		379EF6DC1BAE0F8D0029B9BB /* EZAudioFFT.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EZAudioFFT.swift; sourceTree = "<group>"; };
 		37FA074D1BAD235500D682DB /* DopplMotion.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DopplMotion.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		37FA07501BAD235500D682DB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		37FA07521BAD235500D682DB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -65,6 +69,8 @@
 			children = (
 				37FA07501BAD235500D682DB /* AppDelegate.swift */,
 				37FA07521BAD235500D682DB /* ViewController.swift */,
+				379EF6DC1BAE0F8D0029B9BB /* EZAudioFFT.swift */,
+				379EF6DA1BAE0F520029B9BB /* GraphSquare.swift */,
 				37FA07541BAD235500D682DB /* Assets.xcassets */,
 				37FA07561BAD235500D682DB /* Main.storyboard */,
 				378982291BAD5ABE0094242D /* Pretender.mp3 */,
@@ -214,8 +220,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				379EF6DD1BAE0F8D0029B9BB /* EZAudioFFT.swift in Sources */,
 				37FA07531BAD235500D682DB /* ViewController.swift in Sources */,
 				37FA07511BAD235500D682DB /* AppDelegate.swift in Sources */,
+				379EF6DB1BAE0F520029B9BB /* GraphSquare.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
