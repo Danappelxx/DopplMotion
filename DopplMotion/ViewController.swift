@@ -38,7 +38,7 @@ class ViewController: NSViewController {
         super.viewDidAppear()
 
         let origin = CGPointMake(self.view.frame.width / 2 - 20, self.view.frame.height / 2)
-        let size = CGSizeMake(75, 75)
+        let size = CGSizeMake(200, 200)
         let rect = NSRect(origin: origin, size: size)
 
         self.graphSquare = GraphSquare(frame: rect)
@@ -80,6 +80,24 @@ extension ViewController: EZMicrophoneDelegate {
     func microphone(microphone: EZMicrophone!, hasAudioReceived buffer: UnsafeMutablePointer<UnsafeMutablePointer<Float>>, withBufferSize bufferSize: UInt32, withNumberOfChannels numberOfChannels: UInt32) {
 
 
+        var incrementor1 = 0
+        while incrementor1 < Int(numberOfChannels) {
+
+            let channel = buffer.advancedBy(incrementor1).memory
+
+            var incrementor2 = 0
+            while incrementor2 < Int(bufferSize) {
+
+                let curr = channel.advancedBy(incrementor2).memory
+
+                let newCurr = curr * EZAudioFFT.window(index: incrementor2, numValues: Int(bufferSize))
+
+                channel.advancedBy(incrementor2).initialize(newCurr)
+                incrementor2++
+            }
+            incrementor1++
+        }
+
         self.fft.computeFFTWithBuffer(buffer.memory, withBufferSize: bufferSize)
     }
 }
@@ -102,11 +120,11 @@ extension ViewController: EZAudioFFTDelegate {
 
 //        print("done")
 
-        if fftcounter % 5 == 0 {
+        if fftcounter % 3 == 0 {
             
             let bandwidth = self.fft.bandwidth()
             let diff = CGFloat(bandwidth.left - bandwidth.right)
-            let amplifiedDiff = diff + 75
+            let amplifiedDiff = (diff * 10) + 200
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
                 self.graphSquare?.frame.size = CGSizeMake(amplifiedDiff, amplifiedDiff)
@@ -179,6 +197,16 @@ extension EZAudioFFT {
         let nyquist = self.sampleRate / 2
         return Int((frequency / nyquist) * (2048 / 2))
     }
+
+    /// Of type "Hamming"
+    class func window(index n: Int, numValues N: Int) -> Float {
+        return Float( 0.54 - ( 0.46 * cos( (2 * M_PI * Double(n)) / (Double(N) - 1) ) ) )
+    }
+
+//    private float HammingWindow(int n, int N)
+//    {
+//    return 0.54f - 0.46f * (float)Math.Cos((2 * Math.PI * n) / (N - 1));
+//    }
 }
 
 
