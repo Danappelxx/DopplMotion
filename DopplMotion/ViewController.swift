@@ -13,19 +13,38 @@ class ViewController: NSViewController {
 
     var microphone: EZMicrophone!
     var player: EZAudioPlayer!
-    
-    @IBOutlet weak var buffer: NSTextField!
-    
+    var fft: EZAudioFFTRolling!
+
+    var graphSquare: GraphSquare!
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.microphone = EZMicrophone(delegate: self, startsImmediately: true)
+        self.fft = EZAudioFFTRolling(windowSize: 2048, sampleRate: 44100, delegate: self)
+
 
         let fileURL = NSBundle.mainBundle().URLForResource("20kHz", withExtension: "wav")!
 //        let fileURL = NSBundle.mainBundle().URLForResource("Pretender", withExtension: "mp3")!
 
         self.player = EZAudioPlayer(URL: fileURL, delegate: self)
         self.player.shouldLoop = true
+        self.player.play()
+
+        self.microphone = EZMicrophone(delegate: self, startsImmediately: true)
+
+    }
+
+    override func viewDidAppear() {
+        super.viewDidAppear()
+
+        let origin = CGPointMake(self.view.frame.width / 2 - 20, self.view.frame.height / 2)
+        let size = CGSizeMake(75, 75)
+        let rect = NSRect(origin: origin, size: size)
+
+        self.graphSquare = GraphSquare(frame: rect)
+        self.graphSquare.originalFrame = self.graphSquare.frame
+
+        self.view.addSubview(self.graphSquare)
     }
 
     @IBAction func didTapButton(sender: NSButton) {
@@ -61,77 +80,106 @@ extension ViewController: EZMicrophoneDelegate {
     func microphone(microphone: EZMicrophone!, hasAudioReceived buffer: UnsafeMutablePointer<UnsafeMutablePointer<Float>>, withBufferSize bufferSize: UInt32, withNumberOfChannels numberOfChannels: UInt32) {
 
 
-        let buffer2D = twoDimensionalUnsafeMutablePointerOfFloatsToTwoDimensionalArrayOfFloats(buffer, withOneDSize: Int(bufferSize))
-
-        let bufferAverage = buffer2D[0].filter { $0 != 0 }.reduce(0, combine: +) / Float(buffer2D[0].count)
-        self.buffer.stringValue = "\(bufferAverage)"
-//        print(bufferAverage)
-        usleep(0250000)
-
-        buffer.destroy()
+        self.fft.computeFFTWithBuffer(buffer.memory, withBufferSize: bufferSize)
     }
 }
 
-
-func twoDimensionalUnsafeMutablePointerOfFloatsToTwoDimensionalArrayOfFloats(twoDPointer: UnsafeMutablePointer<UnsafeMutablePointer<Float>>, withOneDSize oneDSize: Int) -> [[Float]] {
-
-
-    var arr1 = [[Float]]()
-    var advancer1 = 0
-    while twoDPointer.advancedBy(advancer1).memory != nil {
-
-        let oneDPointer = twoDPointer.advancedBy(advancer1).memory
-
-        var arr2 = [Float]()
-        var advancer2 = 0
+var fftcounter = 0
+extension ViewController: EZAudioFFTDelegate {
+    func fft(fft: EZAudioFFT!, updatedWithFFTData fftData: UnsafeMutablePointer<Float>, bufferSize: vDSP_Length) {
+//        print("updated fft")
 
 
-        while advancer2 < oneDSize {
+//        var incrementor = 0
+//        while incrementor < Int(bufferSize) {
+//
+//            let curr = fftData.advancedBy(incrementor).memory
+//
+//            print(curr * 10000000)
+//
+//            incrementor++
+//        }
 
-            let curr = oneDPointer.advancedBy(advancer2).memory
+//        print("done")
 
-            arr2.append(curr)
-
-            advancer2++
+        if fftcounter % 5 == 0 {
+            
+            let bandwidth = self.fft.bandwidth()
+            let diff = CGFloat(bandwidth.left - bandwidth.right)
+            let amplifiedDiff = diff + 75
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+                self.graphSquare?.frame.size = CGSizeMake(amplifiedDiff, amplifiedDiff)
+            }
         }
+        
+        fftcounter++
+        
+        
 
-        arr1.append(arr2)
+//        print(diff)
+    }
+}
 
-        advancer1++
+
+class GraphSquare: NSView {
+    override func drawRect(dirtyRect: NSRect) {
+
+        NSColor.greenColor().setFill()
+        NSRectFill(self.bounds)
     }
 
-    return arr1
-    
+    var originalFrame: CGRect?
 }
 
 
 
 
+extension EZAudioFFT {
 
-import Accelerate
+    func bandwidth() -> (left: Int, right: Int) {
 
-// MARK: Fast Fourier Transform
+        let targetFrequency: Float = 20000
+        let targetFrequencyWindow = 33
 
-public func fft(input: [Float]) -> [Float] {
-    
+        let primaryTone = self.indexOfFrequency(targetFrequency)
+        let primaryVolume = fftData.advancedBy(primaryTone).memory
+
+        /// to be determined
+        let maxVolumeRatio: Float = 0.001
+
+        var leftBandwidth = 0
+        var rightBandwidth = 0
+
+        var volume: Float = 0, normalizedVolume: Float = 0
+        repeat {
+
+            leftBandwidth++
+            volume = fftData.advancedBy(primaryTone - leftBandwidth).memory
+            normalizedVolume = volume / primaryVolume
+
+        } while normalizedVolume > maxVolumeRatio && leftBandwidth < targetFrequencyWindow
 
 
-    var real = [Float](input)
-    var imaginary = [Float](count: input.count, repeatedValue: 0.0)
-    var splitComplex = DSPSplitComplex(realp: &real, imagp: &imaginary)
+        volume = 0
+        normalizedVolume = 0
+        repeat {
 
-    let length = vDSP_Length(floor(log2(Float(input.count))))
-    let radix = FFTRadix(kFFTRadix2)
-    let weights = vDSP_create_fftsetup(length, radix)
-    vDSP_fft_zip(weights, &splitComplex, 1, length, FFTDirection(FFT_FORWARD))
+            rightBandwidth++
+            volume = fftData.advancedBy(primaryTone + rightBandwidth).memory
+            normalizedVolume = volume / primaryVolume
 
-    var magnitudes = [Float](count: input.count, repeatedValue: 0.0)
-    vDSP_zvmags(&splitComplex, 1, &magnitudes, 1, vDSP_Length(input.count))
+        } while normalizedVolume > maxVolumeRatio && rightBandwidth < targetFrequencyWindow
 
-    var normalizedMagnitudes = [Float](count: input.count, repeatedValue: 0.0).map { sqrt($0) }
-    vDSP_vsmul(magnitudes, 1, [2.0 / Float(input.count)], &normalizedMagnitudes, 1, vDSP_Length(input.count))
 
-    vDSP_destroy_fftsetup(weights)
+        return (left: leftBandwidth, right: rightBandwidth)
+    }
 
-    return normalizedMagnitudes
+    func indexOfFrequency(frequency: Float) -> Int {
+        let nyquist = self.sampleRate / 2
+        return Int((frequency / nyquist) * (2048 / 2))
+    }
 }
+
+
+
