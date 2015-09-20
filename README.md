@@ -10,7 +10,7 @@ DopplMotion implements the ideas mentioned in the paper above, allowing the user
 DopplMotion was build on Swift 2 using Cocoa and EZAudio, along with a **lot** of research (believe it or not, phsyics is pretty hard!).
 
 ## Challenges we ran into
-There were challenges on every step of the way for us. Perhaps the biggest one was implementing the gesture recognition technology - how do you differentiate between a _tap_ and a _spike_, when they both go in the same direction at same (initial) velocities? Not easily, we can tell you that much. We also wandered into badly-documented lands with Swift, mostly with interfacing between C and Objective-C++ through Swift.
+There were challenges on every step of the way for us. Perhaps the biggest one was implementing the gesture recognition technology - how do you differentiate between a _tap_ and a _drop_, when they both go in the same direction at same (initial) velocities? Not easily, we can tell you that much. We also wandered into badly-documented lands with Swift, mostly with interfacing between C and Objective-C++ through Swift.
 
 ## Accomplishments that we're proud of
 We're really excited that we can track basic and movements through just audio input and output - it still baffles us that its possible in the first place. We're also really proud that we managed to finish so much in such a short amount of time. Pretty sure it took the creators of leap motion more than 36 hours to create their inital mvp ;).
