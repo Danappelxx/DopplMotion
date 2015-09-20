@@ -231,9 +231,9 @@ extension ViewController {
             let url = workspace.runningApplications[index].bundleURL
             let pathComponents = url?.pathComponents
             
-            print(pathComponents)
-            
             if pathComponents?.count == 3 {
+                
+                print(pathComponents)
                 
                 let applicationName = pathComponents![2]
                 
