@@ -32,8 +32,7 @@ class GestureRecognizer {
     
     func processBandwidth() {
 
-
-        if bandwidth.left > 11 || bandwidth.right > 11 {
+        if bandwidth.left > 14 || bandwidth.right > 14 {
 
             if spikeCounter >= 4 {
                 spikeCounter = 0

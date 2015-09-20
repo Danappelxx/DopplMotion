@@ -14,7 +14,9 @@ class ViewController: NSViewController {
     var prevBlock = [Float].init(count: 1024, repeatedValue: 0)
 
     let smoothingTimeConstant: Float = 0.5
-
+    var testCount: Int = 0
+    var testDiff: CGFloat = 0.0
+    
     var microphone: EZMicrophone!
     var player: EZAudioPlayer!
     var fft: EZAudioFFTRolling!
@@ -131,8 +133,20 @@ extension ViewController: EZAudioFFTDelegate {
             if diff == 0 {
                 return
             }
-
-
+            
+//            dispatch_async(dispatch_queue_create("test", DISPATCH_QUEUE_SERIAL)) {
+//                usleep(50000)
+            let testBand = bandwidth()
+            let testDiff = testBand.left - testBand.right
+                
+            print(testDiff, diff)
+            if testDiff > 5 || diff > 5 {
+                if (testDiff < -1 && diff > 1) || (testDiff > 1 && diff < -1) {
+                    print("tappepepeprepfdpafpdofiapeoirpwoirpqwoetpqwoutpqwoeurpqeorupqouefepf")
+                }
+//                }
+        }
+            
             let amplifiedDiff = max((diff * 10) + 200, 0)
             
             dispatch_async(dispatch_get_main_queue(), {
