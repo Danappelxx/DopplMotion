@@ -23,6 +23,10 @@ class ViewController: NSViewController {
     var currIndex = 0
     
     var graphSquare: GraphSquare!
+    
+    let gestureRecognizer = GestureRecognizer()
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,10 +42,6 @@ class ViewController: NSViewController {
         self.player.play()
         
         self.microphone = EZMicrophone(delegate: self, startsImmediately: true)
-        
-//        self.prevBlock =
-//        self.prevBlock.initializeFrom(Array<Float>(count: 1024, repeatedValue: 0.0))
-        
     }
 
     override func viewDidAppear() {
@@ -120,31 +120,31 @@ extension ViewController: EZAudioFFTDelegate {
 //        }
 
         if fftcounter % 3 == 0 {
-            
-            let bandwidth = self.bandwidth()
-            let diff = CGFloat(bandwidth.left - bandwidth.right)
-            
-            if bandwidth.left < 4 && bandwidth.right < 4 {
+
+
+            gestureRecognizer.bandwidth = bandwidth()
+
+            if gestureRecognizer.bandwidthIsUnder4 {
                 return
             }
 
-            // direction: 
+
+            let diff = CGFloat(gestureRecognizer.difference)
 
             if diff == 0 {
                 return
             }
 
-
             if diff < 0 {
-                print("right")
+                // right
+            }
 
-            } else if diff > 0 {
-                print("left")
-
+            if diff > 0 {
+                // left
             }
 
             let amplifiedDiff = max((diff * 10) + 200, 0)
-
+            
             dispatch_async(dispatch_get_main_queue(), {
                 self.graphSquare?.frame.size = CGSizeMake(amplifiedDiff, amplifiedDiff)
             })
@@ -159,7 +159,7 @@ extension ViewController: EZAudioFFTDelegate {
         let targetFrequencyWindow = 33
 
         let primaryTone = self.fft.indexOfFrequency(targetFrequency)
-        let primaryVolume = prevBlock[primaryTone]//prevBlock.advancedBy(primaryTone).memory
+        let primaryVolume = prevBlock[primaryTone]
         
         /// to be determined
         let maxVolumeRatio: Float = 0.001
@@ -171,7 +171,7 @@ extension ViewController: EZAudioFFTDelegate {
         repeat {
             
             leftBandwidth++
-            volume = prevBlock[primaryTone - leftBandwidth]//prevBlock.advancedBy(primaryTone - leftBandwidth).memory
+            volume = prevBlock[primaryTone - leftBandwidth]
             normalizedVolume = volume / primaryVolume
             
         } while normalizedVolume > maxVolumeRatio && leftBandwidth < targetFrequencyWindow
@@ -182,7 +182,7 @@ extension ViewController: EZAudioFFTDelegate {
         repeat {
             
             rightBandwidth++
-            volume = prevBlock[primaryTone + rightBandwidth]//prevBlock.advancedBy(primaryTone + rightBandwidth).memory
+            volume = prevBlock[primaryTone + rightBandwidth]
             normalizedVolume = volume / primaryVolume
             
         } while normalizedVolume > maxVolumeRatio && rightBandwidth < targetFrequencyWindow
@@ -205,15 +205,11 @@ extension ViewController {
             print(pathComponents)
             
             if pathComponents?.count == 3 {
-                //                print(pathComponents![2])
                 
                 let applicationName = pathComponents![2]
-                //                let applicationLength = applicationName.characters.count
-                //                print(applicationLength)
                 
                 let digitIndex = applicationName.endIndex.advancedBy(-4)
                 let lastThreeDigits = applicationName.substringFromIndex(digitIndex)
-                //                print(lastThreeDigits)
                 
                 if lastThreeDigits != ".app" && pathComponents![1] != "Applications" {
                     

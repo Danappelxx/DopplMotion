@@ -8,20 +8,28 @@
 
 import Foundation
 
+typealias Bandwidth = (left: Int, right: Int)
 class GestureRecognizer {
 
-    let velocity: Double
-    let direction: Direction
+    var bandwidth: Bandwidth! {
+        didSet {
+            processBandwidth()
+        }
+    }
+    var difference: Int {
+        return bandwidth.left - bandwidth.right
+    }
+    var bandwidthIsUnder4: Bool {
+        return bandwidth.left < 4 || bandwidth.right < 4
+    }
 //    let possibleGestures: [Gesture]
 //    let length: Double
+    
+    func processBandwidth() {
 
-
-    init(velocity: Double, direction: Direction) {
-
-        self.velocity = velocity
-        self.direction = direction
-
-        // insert complicated stuff here
+        if bandwidth.left > 4 && bandwidth.right > 4 {
+            // stuff
+        }
     }
 }
 
@@ -43,19 +51,4 @@ enum Gesture {
 
     // other
     case Sustained
-    
-
-//    Fast/Slow - Away/To
-//    Tap
-//    Double Tap
-//    Away + To at Same Time
-//    Sustained (walk up to it)
-}
-
-/**
-*  Direction the gesture came from
-*/
-enum Direction {
-    case Far
-    case Close
 }
