@@ -682,12 +682,34 @@
                                     <action selector="didTapButton:" target="XfG-lQ-9wD" id="xY3-EK-mok"/>
                                 </connections>
                             </button>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="LH0-ZF-y0o">
+                                <rect key="frame" x="405" y="234" width="57" height="18"/>
+                                <buttonCell key="cell" type="check" title="Spike" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="eKO-Rn-Bxu">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
+                            <button translatesAutoresizingMaskIntoConstraints="NO" id="Gx3-sE-eZL">
+                                <rect key="frame" x="405" y="214" width="52" height="18"/>
+                                <buttonCell key="cell" type="check" title="Drop" bezelStyle="regularSquare" imagePosition="left" state="on" inset="2" id="oqW-jf-9Ol">
+                                    <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                            </button>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="LH0-ZF-y0o" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" id="AHA-dI-DNC"/>
                             <constraint firstAttribute="bottom" secondItem="XSU-Yn-zoF" secondAttribute="bottom" constant="20" id="J7S-un-fxa"/>
                             <constraint firstItem="XSU-Yn-zoF" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="Rfx-A0-omI"/>
+                            <constraint firstItem="Gx3-sE-eZL" firstAttribute="leading" secondItem="LH0-ZF-y0o" secondAttribute="leading" id="Txl-1f-SpA"/>
+                            <constraint firstItem="Gx3-sE-eZL" firstAttribute="top" secondItem="LH0-ZF-y0o" secondAttribute="bottom" constant="6" id="YRl-Kl-JoM"/>
+                            <constraint firstAttribute="trailing" secondItem="LH0-ZF-y0o" secondAttribute="trailing" constant="20" id="pOW-eT-zNl"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="dropBtn" destination="Gx3-sE-eZL" id="gH4-E0-NAt"/>
+                        <outlet property="spikeBtn" destination="LH0-ZF-y0o" id="Nth-r5-Jti"/>
+                    </connections>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
