@@ -8,6 +8,7 @@
 
 import Cocoa
 import EZAudio
+import AppKit
 
 class ViewController: NSViewController {
 
@@ -50,6 +51,9 @@ class ViewController: NSViewController {
         self.microphone = EZMicrophone(delegate: self, startsImmediately: true)
         
         self.gestureRecognizer.delegate = self
+        
+//        self.launchMultitask()
+    
     }
 
     override func viewDidAppear() {
@@ -148,15 +152,72 @@ extension ViewController: GestureRecognizerDelegate {
         switch primaryCandidate {
         case .Spike:
             launchNextAvailableApplication(currIndex)
-            break
+        case .Drop:
+            let src = CGEventSourceCreate(CGEventSourceStateID.HIDSystemState)
+//            let f4d = CGEventCreateKeyboardEvent(src, 0x76, true)
+//            let f4u = CGEventCreateKeyboardEvent(src, 0x76, false)
+//            
+//            CGEventSetFlags(f4d, CGEventFlags.MaskCommand)
+//            CGEventSetFlags(f4u, CGEventFlags.MaskCommand)
             
+            let cmdd = CGEventCreateKeyboardEvent(src, 0x38, true)
+            let cmdu = CGEventCreateKeyboardEvent(src, 0x38, false)
+            let ld = CGEventCreateKeyboardEvent(src, 0x25, true)
+            let lu = CGEventCreateKeyboardEvent(src, 0x25, false)
+//
+            let loc = CGEventTapLocation.CGHIDEventTap
+//
+////            CGEventPost(loc, f4d)
+////            CGEventPost(loc, f4u)
+//            
+            
+            CGEventSetFlags(ld, CGEventFlags.MaskCommand)
+            CGEventSetFlags(lu, CGEventFlags.MaskCommand)
+            CGEventPost(loc, cmdd)
+            CGEventPost(loc, ld)
+            CGEventPost(loc, lu)
+            CGEventPost(loc, cmdu)
+//
+//            let f3d = CGEventCreateKeyboardEvent(src, 0x63, true)
+//            let f3u = CGEventCreateKeyboardEvent(src, 0x63, false)
+            
+
+//            
+//            CGEventPost(loc, f3d)
+//            CGEventPost(loc, f3u)
+
+            
+//            workspace.launchApplication("Terminal.app")
         default:
-            break
+            print("Default")
         }
     }
 }
 
 extension ViewController {
+    
+    func launchMultitask() {
+        let src = CGEventSourceCreate(CGEventSourceStateID.HIDSystemState)
+        
+        let cmdd = CGEventCreateKeyboardEvent(src, 0x38, true)
+        let cmdu = CGEventCreateKeyboardEvent(src, 0x38, false)
+        let tabd = CGEventCreateKeyboardEvent(src, 0x30, true)
+        let tabu = CGEventCreateKeyboardEvent(src, 0x30, false)
+        let lefd = CGEventCreateKeyboardEvent(src, 0x7B, true)
+        let lefu = CGEventCreateKeyboardEvent(src, 0x7B, false)
+        let rigd = CGEventCreateKeyboardEvent(src, 0x7C, true)
+        let rigu = CGEventCreateKeyboardEvent(src, 0x7C, false)
+        CGEventSetFlags(tabd, CGEventFlags.MaskCommand)
+        CGEventSetFlags(tabu, CGEventFlags.MaskCommand)
+        let loc = CGEventTapLocation.CGHIDEventTap
+        CGEventPost(loc, cmdd)
+        CGEventPost(loc, tabd)
+        CGEventPost(loc, tabu)
+        
+        // check for swipe
+        
+    }
+    
     func launchNextAvailableApplication(index: Int) {
         
         // base case

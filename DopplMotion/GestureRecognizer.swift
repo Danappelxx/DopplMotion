@@ -32,14 +32,15 @@ class GestureRecognizer {
         
         self.bandwidth = bandwidth
 
-        if bandwidth.left > 14 || bandwidth.right > 14 {
+        print("\(bandwidth.left), \(bandwidth.right)")
+        if bandwidth.left > 14 { //up
 
-            if lastDirection != Direction.Away {
-                spikeCounter = 0
-                lastDirection = Direction.Away
-                return
-            }
-            
+//            if lastDirection != Direction.Away {
+//                spikeCounter = 0
+//                lastDirection = Direction.Away
+//                return
+//            }
+//            
             if spikeCounter == 4 {
                 spikeCounter = 0
 
@@ -51,13 +52,13 @@ class GestureRecognizer {
                 spikeCounter++
             }
 
-        } else if bandwidth.left < -15 || bandwidth.right < -15 {
+        } else if bandwidth.right > 14 { //down
             
-            if lastDirection != Direction.To {
-                spikeCounter = 0
-                lastDirection = Direction.To
-                return
-            }
+//            if lastDirection != Direction.To {
+//                spikeCounter = 0
+//                lastDirection = Direction.To
+//                return
+//            }
             
             if spikeCounter == 4 {
                 spikeCounter = 0
