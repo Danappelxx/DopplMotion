@@ -18,11 +18,9 @@ class GestureRecognizer {
     var spikeCounter = 0
     var delegate: GestureRecognizerDelegate?
     var possibleGestures = [Gesture]()
-    var bandwidth: Bandwidth! {
-        didSet {
-            processBandwidth()
-        }
-    }
+    var bandwidth: Bandwidth!
+    var lastDirection = Direction.None
+
     var difference: Int {
         return bandwidth.left - bandwidth.right
     }
@@ -30,29 +28,64 @@ class GestureRecognizer {
         return bandwidth.left < 4 || bandwidth.right < 4
     }
     
-    func processBandwidth() {
+    func update(bandwidth: Bandwidth) {
+        
+        self.bandwidth = bandwidth
 
         if bandwidth.left > 14 || bandwidth.right > 14 {
 
-            if spikeCounter >= 4 {
+            if lastDirection != Direction.Away {
+                spikeCounter = 0
+                lastDirection = Direction.Away
+                return
+            }
+            
+            if spikeCounter == 4 {
                 spikeCounter = 0
 
-                self.possibleGestures = [.Spike]
-                self.delegate?.updatedPossibleGestures(withGestureRecognizer: self, withMostLikelyCandidate: .Spike)
+                self.possibleGestures = [.Spike, .Fast, .Away]
+                self.delegate?.updatedPossibleGestures(withGestureRecognizer: self, withPrimaryCandidate: .Spike)
 
             } else {
 
                 spikeCounter++
             }
-        } else {
 
+        } else if bandwidth.left < -15 || bandwidth.right < -15 {
+            
+            if lastDirection != Direction.To {
+                spikeCounter = 0
+                lastDirection = Direction.To
+                return
+            }
+            
+            if spikeCounter == 4 {
+                spikeCounter = 0
+                
+                self.possibleGestures = [.Drop, .Fast, .To]
+                self.delegate?.updatedPossibleGestures(withGestureRecognizer: self, withPrimaryCandidate: .Drop)
+                
+            } else {
+                
+                spikeCounter++
+            }
+
+        } else {
             spikeCounter = 0
         }
     }
 }
 
 protocol GestureRecognizerDelegate {
-    func updatedPossibleGestures(withGestureRecognizer gestureRecognizer: GestureRecognizer, withMostLikelyCandidate mostLikelyCandidate: Gesture)
+    func updatedPossibleGestures(withGestureRecognizer gestureRecognizer: GestureRecognizer, withPrimaryCandidate primaryCandidate: Gesture)
+}
+
+enum Direction {
+    case To
+    case Away
+
+    // only for initialization
+    case None
 }
 
 /**
@@ -70,7 +103,10 @@ enum Gesture {
     case Flick
     case Tap
     case DoubleTap
-    case Spike
+    
+    // up & down
+    case Spike // also .Fast, .Away
+    case Drop // also .Fast, .To
 
     // other
     case Sustained
