@@ -34,7 +34,7 @@ class ViewController: NSViewController {
         let fileURL = NSBundle.mainBundle().URLForResource("20kHz", withExtension: "wav")!
 //        let fileURL = NSBundle.mainBundle().URLForResource("Pretender", withExtension: "mp3")!
 
-        self.player = EZAudioPlayer(URL: fileURL, delegate: self)
+        self.player = EZAudioPlayer(URL: fileURL)
         self.player.shouldLoop = true
         self.player.play()
         
@@ -114,28 +114,15 @@ class ViewController: NSViewController {
     }
 }
 
-extension ViewController: EZAudioPlayerDelegate {
-    func audioPlayer(audioPlayer: EZAudioPlayer!, updatedPosition framePosition: Int64, inAudioFile audioFile: EZAudioFile!) {
-//        print("updated")
-    }
-    
-    func audioPlayer(audioPlayer: EZAudioPlayer!, reachedEndOfAudioFile audioFile: EZAudioFile!) {
-//        print("reached end")
-    }
-    
-    func audioPlayer(audioPlayer: EZAudioPlayer!, playedAudio buffer: UnsafeMutablePointer<UnsafeMutablePointer<Float>>, withBufferSize bufferSize: UInt32, withNumberOfChannels numberOfChannels: UInt32, inAudioFile audioFile: EZAudioFile!) {
-//        print("played audio")
-    }
-}
-
 extension ViewController: EZMicrophoneDelegate {
     func microphone(microphone: EZMicrophone!, changedPlayingState isPlaying: Bool) {
-        print(isPlaying)
+//        print(isPlaying)
     }
 
     func microphone(microphone: EZMicrophone!, hasAudioReceived buffer: UnsafeMutablePointer<UnsafeMutablePointer<Float>>, withBufferSize bufferSize: UInt32, withNumberOfChannels numberOfChannels: UInt32) {
 
 
+        // apply Hamming's window to each element of each channel
         var incrementor1 = 0
         while incrementor1 < Int(numberOfChannels) {
 
@@ -394,12 +381,4 @@ extension EZAudioFFT {
     class func window(index n: Int, numValues N: Int) -> Float {
         return Float( 0.54 - ( 0.46 * cos( (2 * M_PI * Double(n)) / (Double(N) - 1) ) ) )
     }
-
-//    private float HammingWindow(int n, int N)
-//    {
-//    return 0.54f - 0.46f * (float)Math.Cos((2 * Math.PI * n) / (N - 1));
-//    }
 }
-
-
-
