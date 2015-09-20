@@ -32,7 +32,7 @@ class GestureRecognizer {
         
         self.bandwidth = bandwidth
 
-        print("\(bandwidth.left), \(bandwidth.right)")
+        // print("\(bandwidth.left), \(bandwidth.right)")
         if bandwidth.left > 14 { //up
 
 //            if lastDirection != Direction.Away {
