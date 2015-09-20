@@ -10,7 +10,14 @@ import Foundation
 
 typealias Bandwidth = (left: Int, right: Int)
 class GestureRecognizer {
+    
+    init(delegate: GestureRecognizerDelegate? = nil) {
+        self.delegate = delegate
+    }
 
+    var spikeCounter = 0
+    var delegate: GestureRecognizerDelegate?
+    var possibleGestures = [Gesture]()
     var bandwidth: Bandwidth! {
         didSet {
             processBandwidth()
@@ -22,15 +29,31 @@ class GestureRecognizer {
     var bandwidthIsUnder4: Bool {
         return bandwidth.left < 4 || bandwidth.right < 4
     }
-//    let possibleGestures: [Gesture]
-//    let length: Double
     
     func processBandwidth() {
 
-        if bandwidth.left > 4 && bandwidth.right > 4 {
-            // stuff
+
+        if bandwidth.left > 11 || bandwidth.right > 11 {
+
+            if spikeCounter >= 4 {
+                spikeCounter = 0
+
+                self.possibleGestures = [.Spike]
+                self.delegate?.updatedPossibleGestures(withGestureRecognizer: self, withMostLikelyCandidate: .Spike)
+
+            } else {
+
+                spikeCounter++
+            }
+        } else {
+
+            spikeCounter = 0
         }
     }
+}
+
+protocol GestureRecognizerDelegate {
+    func updatedPossibleGestures(withGestureRecognizer gestureRecognizer: GestureRecognizer, withMostLikelyCandidate mostLikelyCandidate: Gesture)
 }
 
 /**
@@ -48,6 +71,7 @@ enum Gesture {
     case Flick
     case Tap
     case DoubleTap
+    case Spike
 
     // other
     case Sustained

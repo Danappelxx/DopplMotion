@@ -12,23 +12,21 @@ import EZAudio
 class ViewController: NSViewController {
 
     var prevBlock = [Float].init(count: 1024, repeatedValue: 0)
-//    var prevBlock: UnsafeMutablePointer<Float> = UnsafeMutablePointer<Float>.alloc(1024)
+
     let smoothingTimeConstant: Float = 0.5
-    
+
     var microphone: EZMicrophone!
     var player: EZAudioPlayer!
     var fft: EZAudioFFTRolling!
-    
-    var spikeCounter: Int = 0
 
     let workspace = NSWorkspace.sharedWorkspace()
     var currIndex = 0
-    
+
     var graphSquare: GraphSquare!
-    
+
     let gestureRecognizer = GestureRecognizer()
-    
-    
+
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,6 +42,8 @@ class ViewController: NSViewController {
         self.player.play()
         
         self.microphone = EZMicrophone(delegate: self, startsImmediately: true)
+        
+        self.gestureRecognizer.delegate = self
     }
 
     override func viewDidAppear() {
@@ -123,33 +123,16 @@ extension ViewController: EZAudioFFTDelegate {
 
         if fftcounter % 3 == 0 {
             
-            let bandwidth = self.bandwidth()
-            let diff = CGFloat(bandwidth.left - bandwidth.right)
+            
+            self.gestureRecognizer.bandwidth = bandwidth()
+
+            let diff = CGFloat(self.gestureRecognizer.difference)
 
             if diff == 0 {
                 return
             }
 
-            if diff < 0 {
-                // right
-            }
 
-            if diff > 0 {
-                // left
-            }
-            
-            if bandwidth.left > 15 || bandwidth.right > 15 {
-                if spikeCounter >= 4 {
-                    spikeCounter = 0
-                    print("spike")
-                    launchNextAvailableApplication(self.currIndex)
-                } else {
-                    spikeCounter++
-                }
-            } else {
-                spikeCounter = 0
-            }
-            
             let amplifiedDiff = max((diff * 10) + 200, 0)
             
             dispatch_async(dispatch_get_main_queue(), {
@@ -199,6 +182,20 @@ extension ViewController: EZAudioFFTDelegate {
     }
 }
 
+extension ViewController: GestureRecognizerDelegate {
+    func updatedPossibleGestures(withGestureRecognizer gestureRecognizer: GestureRecognizer, withMostLikelyCandidate mostLikelyCandidate: Gesture) {
+
+        switch mostLikelyCandidate {
+        case .Spike:
+            print("spike!!!")
+            launchNextAvailableApplication(currIndex)
+            break
+            
+        default:
+            print("other!")
+        }
+    }
+}
 
 extension ViewController {
     func launchNextAvailableApplication(index: Int) {
