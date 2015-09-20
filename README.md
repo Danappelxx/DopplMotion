@@ -4,7 +4,7 @@
 We saw a fascinating [paper](http://research.microsoft.com/en-us/um/redmond/groups/cue/publications/GuptaSoundWaveCHI2012.pdf) which explained how it was possible to detect movement using only a microphone and speaker. By playing a high pitched sound and listening to its echos, we can use the changes in frequency (caused by the Doppler effect) to detect movement.
 
 ## What It Does
-By implementing the ideas mentioned above, DopplMotion allows the user to perform basic gestures such as "spike" and "drop." For example, if the user does a "spike: gesture by lifting their hand off the keyboard quickly, DopplMotion will switch to the next application. If the user performs the "drop" gesture and quickly drops their hand onto the keyboard, DopplMotion will open the Launchpad. Because DopplMotion can perform arbitrary commands for any detectable gesture, the possibilities are _endless_.
+By implementing the ideas mentioned above, DopplMotion allows the user to perform basic gestures such as "spike" and "drop." For example, if the user does a "spike" gesture by lifting their hand off the keyboard quickly, DopplMotion will switch to the next application. If the user performs the "drop" gesture and quickly drops their hand onto the keyboard, DopplMotion will open the Launchpad. Because DopplMotion can perform arbitrary commands for any detectable gesture, the possibilities are _endless_.
 
 ## How We Built It
 DopplMotion was written in Swift 2 using Cocoa and EZAudio, along with a **lot** of research (believe it or not, physics is pretty hard!).
