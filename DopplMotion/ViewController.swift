@@ -20,6 +20,10 @@ class ViewController: NSViewController {
     var microphone: EZMicrophone!
     var player: EZAudioPlayer!
     var fft: EZAudioFFTRolling!
+    
+    @IBOutlet weak var spikeCheckbox: NSButton!
+    @IBOutlet weak var dropCheckbox: NSButton!
+    @IBOutlet weak var tapCheckbox: NSButton!
 
     let workspace = NSWorkspace.sharedWorkspace()
     var currIndex = 0
@@ -27,11 +31,6 @@ class ViewController: NSViewController {
     var graphSquare: GraphSquare!
 
     let gestureRecognizer = GestureRecognizer()
-
-
-    @IBOutlet weak var spikeBtn: NSButton!
-    @IBOutlet weak var dropBtn: NSButton!
-
 
     override func viewDidLoad() {
 
@@ -46,17 +45,17 @@ class ViewController: NSViewController {
         self.player = EZAudioPlayer(URL: fileURL)
         self.player.shouldLoop = true
         self.player.play()
-        
+
         self.microphone = EZMicrophone(delegate: self, startsImmediately: true)
-        
+
         self.gestureRecognizer.delegate = self
     }
 
     override func viewDidAppear() {
         super.viewDidAppear()
 
-        let origin = CGPointMake(self.view.frame.width / 2 - 20, self.view.frame.height / 2)
-        let size = CGSizeMake(200, 200)
+        let origin = CGPointMake(10, 10)
+        let size = CGSizeMake(150, 150)
         let rect = NSRect(origin: origin, size: size)
 
         self.graphSquare = GraphSquare(frame: rect)
@@ -126,7 +125,7 @@ extension ViewController: EZAudioFFTDelegate {
             if diff == 0 {
                 return
             }
-            let amplifiedDiff = max((diff * 10) + 200, 0)
+            let amplifiedDiff = max((diff * 10) + 150, 0)
 
 
             dispatch_async(dispatch_get_main_queue()) {
@@ -143,13 +142,18 @@ extension ViewController: EZAudioFFTDelegate {
 extension ViewController: GestureRecognizerDelegate {
     func updatedPossibleGestures(withGestureRecognizer gestureRecognizer: GestureRecognizer, withPrimaryCandidate primaryCandidate: Gesture) {
 
+        let noop = { return }
+
         print(primaryCandidate)
 
         switch primaryCandidate {
         case .Spike:
-            launchNextAvailableApplication(currIndex)
+            spikeCheckbox.isChecked ? launchNextAvailableApplication(currIndex) : noop()
             break
-            
+        case .Drop:
+//            dropCheckbox.isChecked ? hideCurrentWindow() : noop()
+            break
+
         default:
             break
         }
@@ -234,5 +238,11 @@ extension ViewController {
         
         
         return (left: leftBandwidth, right: rightBandwidth)
+    }
+}
+
+extension NSButton {
+    var isChecked: Bool {
+        return self.state == NSOnState
     }
 }
