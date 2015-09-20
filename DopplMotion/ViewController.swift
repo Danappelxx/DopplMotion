@@ -18,6 +18,8 @@ class ViewController: NSViewController {
     var microphone: EZMicrophone!
     var player: EZAudioPlayer!
     var fft: EZAudioFFTRolling!
+    
+    var spikeCounter: Int = 0
 
     let workspace = NSWorkspace.sharedWorkspace()
     var currIndex = 0
@@ -123,17 +125,12 @@ extension ViewController: EZAudioFFTDelegate {
             
             let bandwidth = self.bandwidth()
             let diff = CGFloat(bandwidth.left - bandwidth.right)
-            
-            if bandwidth.left < 4 && bandwidth.right < 4 {
-                return
-            }
 
             // direction: 
 
             if diff == 0 {
                 return
             }
-
 
             if diff < 0 {
                 print("right")
@@ -142,7 +139,19 @@ extension ViewController: EZAudioFFTDelegate {
                 print("left")
 
             }
-
+            
+            if bandwidth.left > 15 || bandwidth.right > 15 {
+                if spikeCounter >= 4 {
+                    spikeCounter = 0
+                    print("spike")
+                    launchNextAvailableApplication(self.currIndex)
+                } else {
+                    spikeCounter++
+                }
+            } else {
+                spikeCounter = 0
+            }
+            
             let amplifiedDiff = max((diff * 10) + 200, 0)
 
             dispatch_async(dispatch_get_main_queue(), {
@@ -152,7 +161,7 @@ extension ViewController: EZAudioFFTDelegate {
 
         fftcounter++
     }
-    
+
     func bandwidth() -> (left: Int, right: Int) {
         
         let targetFrequency: Float = 20000
