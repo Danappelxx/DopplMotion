@@ -126,9 +126,6 @@ extension ViewController: EZAudioFFTDelegate {
             let bandwidth = self.bandwidth()
             let diff = CGFloat(bandwidth.left - bandwidth.right)
 
-
-            let diff = CGFloat(gestureRecognizer.difference)
-
             if diff == 0 {
                 return
             }
